@@ -1,34 +1,30 @@
-// ============ Navigation Toggle =============
+// ========== NAVBAR SCROLL EFFECT ==========
+const navbar = document.querySelector('.navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// ========== HAMBURGER MENU TOGGLE ==========
 const hamburger = document.querySelector('.hamburger');
 const navMenu = document.querySelector('.nav-menu');
 
-hamburger.addEventListener('click', () => {
+hamburger?.addEventListener('click', () => {
   hamburger.classList.toggle('active');
   navMenu.classList.toggle('active');
 });
 
-document.querySelectorAll('.nav-link').forEach(link => {
-  link.addEventListener('click', () => {
-    hamburger.classList.remove('active');
-    navMenu.classList.remove('active');
-  });
-});
-
-// ============ Scroll Spy =============
-const sections = document.querySelectorAll('section[id]');
+// ========== SMOOTH SCROLL + ACTIVE LINK ==========
 const navLinks = document.querySelectorAll('.nav-link');
+const sections = document.querySelectorAll('section[id]');
 
 window.addEventListener('scroll', () => {
-  let scrollY = window.scrollY;
-  sections.forEach(current => {
-    const sectionHeight = current.offsetHeight;
-    const sectionTop = current.offsetTop - 150;
-    const sectionId = current.getAttribute('id');
-
-    if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+  let scrollPos = window.scrollY;
+  sections.forEach(section => {
+    if (scrollPos >= section.offsetTop - 200) {
+      let id = section.getAttribute('id');
       navLinks.forEach(link => {
         link.classList.remove('active');
-        if (link.getAttribute('href') === `#${sectionId}`) {
+        if (link.getAttribute('href') === `#${id}`) {
           link.classList.add('active');
         }
       });
@@ -36,87 +32,90 @@ window.addEventListener('scroll', () => {
   });
 });
 
-// ============ Scroll Reveal =============
-const animatedItems = document.querySelectorAll('.scroll-animate');
-
+// ========== SCROLL ANIMATION ==========
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
       entry.target.classList.add('animate');
+      observer.unobserve(entry.target);
     }
   });
-}, { threshold: 0.1 });
+}, { threshold: 0.15 });
 
-animatedItems.forEach(item => {
-  item.classList.add('scroll-animate');
-  observer.observe(item);
-});
+document.querySelectorAll('.scroll-animate').forEach(el => observer.observe(el));
 
-// ============ Typing Animation =============
-function typeWriter(element, text, speed = 70) {
+// ========== TYPEWRITER FOR HERO ==========
+function typeWriter(el, text, speed = 70) {
   let i = 0;
-  element.textContent = '';
-  (function type() {
+  el.textContent = '';
+  function type() {
     if (i < text.length) {
-      element.textContent += text.charAt(i);
-      i++;
+      el.textContent += text.charAt(i++);
       setTimeout(type, speed);
     }
-  })();
+  }
+  type();
 }
 
 window.addEventListener('load', () => {
   const heroTitle = document.querySelector('.hero h1');
   if (heroTitle) {
-    typeWriter(heroTitle, heroTitle.dataset.text || heroTitle.textContent, 50);
+    const text = heroTitle.dataset.text || heroTitle.textContent;
+    typeWriter(heroTitle, text);
   }
 });
 
-// ============ Contact Notification =============
-function showNotification(msg, type = 'info') {
-  const prev = document.querySelector('.notification');
-  if (prev) prev.remove();
+// ========== CONTACT FORM VALIDATION ==========
+function showNotification(message, type = 'info') {
+  const existing = document.querySelector('.notification');
+  if (existing) existing.remove();
 
-  const box = document.createElement('div');
-  box.className = `notification ${type}`;
-  box.textContent = msg;
-
-  Object.assign(box.style, {
+  const n = document.createElement('div');
+  n.className = `notification ${type}`;
+  n.textContent = message;
+  Object.assign(n.style, {
     position: 'fixed',
     top: '20px',
     right: '20px',
-    padding: '1rem 1.5rem',
-    background: type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6',
-    color: '#fff',
+    background: type === 'success' ? '#54ffbd' : '#ff4f5e',
+    color: '#000',
+    padding: '1rem 1.25rem',
+    fontWeight: '600',
     borderRadius: '0.5rem',
-    boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
-    zIndex: '1000'
+    zIndex: 10000,
+    boxShadow: '0 6px 12px rgba(0,0,0,0.2)'
   });
 
-  document.body.appendChild(box);
-
-  setTimeout(() => box.remove(), 5000);
+  document.body.appendChild(n);
+  setTimeout(() => n.remove(), 5000);
 }
 
-// ============ Contact Form Validation =============
-const contactForm = document.getElementById('contactForm');
+document.getElementById('contactForm')?.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const name = form.name.value.trim();
+  const email = form.email.value.trim();
+  const message = form.message.value.trim();
 
-if (contactForm) {
-  contactForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const name = contactForm.name.value.trim();
-    const email = contactForm.email.value.trim();
-    const message = contactForm.message.value.trim();
+  if (!name || !email || !message) {
+    showNotification('Please fill all fields', 'error');
+    return;
+  }
 
-    if (!name || !email || !message) {
-      return showNotification('Please fill all fields.', 'error');
-    }
+  if (!/^\S+@\S+\.\S+$/.test(email)) {
+    showNotification('Enter a valid email', 'error');
+    return;
+  }
 
-    if (!/^\S+@\S+\.\S+$/.test(email)) {
-      return showNotification('Invalid email format.', 'error');
-    }
+  showNotification('Message sent successfully!', 'success');
+  form.reset();
+});
 
-    showNotification('Message sent successfully!', 'success');
-    contactForm.reset();
-  });
-}
+// ========== OPTIONAL: HERO PARALLAX (Subtle) ==========
+window.addEventListener('scroll', () => {
+  const hero = document.querySelector('.hero');
+  if (hero) {
+    const offset = window.scrollY * -0.3;
+    hero.style.backgroundPositionY = `${offset}px`;
+  }
+});
