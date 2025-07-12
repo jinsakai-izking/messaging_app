@@ -1,0 +1,31 @@
+{
+  "name": "messaging-app-infrastructure",
+  "version": "1.0.0",
+  "description": "AWS CDK infrastructure for the messaging app",
+  "main": "lib/messaging-app-stack.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest",
+    "cdk": "cdk",
+    "deploy": "cdk deploy",
+    "destroy": "cdk destroy",
+    "diff": "cdk diff",
+    "synth": "cdk synth"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.5",
+    "@types/node": "20.9.0",
+    "aws-cdk": "^2.99.1",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.1",
+    "typescript": "~5.3.2"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.99.1",
+    "constructs": "^10.3.0",
+    "@aws-cdk/aws-apigatewayv2-alpha": "^2.99.1-alpha.0",
+    "@aws-cdk/aws-apigatewayv2-integrations-alpha": "^2.99.1-alpha.0"
+  }
+}
